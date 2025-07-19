@@ -3,36 +3,39 @@
 using namespace std;
 
 constexpr size_t N = sizeof(int) * 8;
+using Cnt = char; // max length is 10^4
+using RNum = unsigned int;
 
-void accumulate_bit_number(array<int, N> &r, int number) {
-    for (size_t i = 0; i < N; i++) {
-        if (number % 2 == 1) r[i] += 1;
+void accumulate_bit_number(array<Cnt, N> &cs, RNum number) {
+    for (size_t i = 0;; i++) {
+        // cs[i] += number % 2;
+        cs[i] = (cs[i] + number % 2) % 3;
         number /= 2;
-        if (number == 0) break;
+        if (number == 0) return;
     }
 }
 
-class Main
+class Solution
 {
 public:
     int singleNumber(vector<int> &nums) {
-        array<int, N> a {0};
+        array<Cnt, N> a {0};
         for (const int& n : nums) {
-            accumulate_bit_number(a, n);
+            accumulate_bit_number(a, static_cast<RNum>(n));
         }
-        int result = 0;
+        RNum result = 0;
         for (size_t i = N-1; i < N; i--) {
             result *= 2;
-            if (a[i] % 3 == 1) result += 1;
+            result += a[i] % 3;
         }
-        return result;
+        return static_cast<int>(result);
     }
 };
 
 #include<cassert>
 
 int main() {
-    Main m;
-    vector<int> v {2,2,2,1};
-    assert(m.singleNumber(v)==1);
+    Solution m;
+    vector<int> v {2,2,2,-10};
+    assert(m.singleNumber(v)==-10);
 }
