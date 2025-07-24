@@ -17,3 +17,7 @@ public:
          
     }
 };
+
+int main() {
+    
+}
