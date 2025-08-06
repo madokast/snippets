@@ -1,5 +1,5 @@
 #include<vector>
-#include<map>
+#include<unordered_map>
 #include<set>
 #include<algorithm>
 #include<iostream>
@@ -8,57 +8,45 @@ using namespace std;
 class Solution {
 public:
     long long minCost(vector<int>& basket1, vector<int>& basket2) {
-        map<int, pair<int, int>> m;
-        for (auto &&k : basket1) m[k].first++;
-        for (auto &&k : basket2) m[k].second++;
-        
-        // 判断每个 pair [0]+[1] 是不是偶数，还有差异多少
-        // 差异多少记录到 s1 s2
-        // 记录一个最小值
-        vector<int> s1, s2;
+        unordered_map<int, pair<int, int>> m;
         int minValue = basket1[0];
+        for (auto &&k : basket1) {m[k].first++; minValue = min(minValue, k);}
+        for (auto &&k : basket2) {m[k].second++; minValue = min(minValue, k);}
+        minValue *= 2; // 做中间人，需要两次代价
+
+        // 判断每个 pair [0]+[1] 是不是偶数，还有差异多少
+        // 差异多少记录到 v
+        // 记录一个最小值
+        // 再记录要交换的次数
+        vector<pair<int, int>> v;
+        v.reserve(basket1.size() + basket2.size());
+        size_t swapNum = 0;
         for (auto &&p : m) {
-            minValue = min(p.first, minValue);
             auto& counts = p.second;
             if ((counts.first + counts.second) % 2 != 0) return -1;
-            int diff = (counts.first - counts.second) / 2;
-            while (diff > 0) {
-                s1.push_back(p.first);
-                diff--;
-            }
-            while (diff < 0) {
-                s2.push_back(p.first);
-                diff++;
-            }
+            int diff = abs((counts.first - counts.second) / 2);
+            swapNum += diff;
+            v.push_back(make_pair(min(p.first, minValue), diff));
         }
-        sort(s1.begin(), s1.end());
-        sort(s2.begin(), s2.end());
-        minValue *= 2; // 做中间人，需要两次代价
+        sort(v.begin(), v.end());
+        swapNum /= 2; // 交换次数一半，因为换一次就复位 2 个数
         long long r = 0;
-        // 找出 s1 和 s2 中的最小值，再找另一边的最大值
-        while (!s1.empty()) {
-            auto s1_min = s1[0];
-            auto s2_min = s2[0];
-            if (s1_min <= s2_min) {
-                auto s2_max = *(--s2.cend());
-                if (minValue < s1_min) {
-                    r += minValue * s1.size();
+        // 从 s1 s2 中找到最小的 swapNum 个值
+        for (auto &&p : v) {
+            int num = p.first;
+            int cnt = p.second;
+            if (num < minValue) {
+                if (cnt < swapNum) {
+                    r += num * cnt;
+                    swapNum -= cnt;
+                } else {
+                    r += num * swapNum;
                     break;
                 }
-                else r += s1_min;
-                s1.pop_front();
-                s2.pop_back();
             } else {
-                auto s1_max = *(--s1.cend());
-                if (minValue < s2_min) {
-                    r += minValue * s1.size();
-                    break;
-                }
-                else r += s2_min;
-                s1.pop_back();
-                s2.pop_front();
+                r += minValue * swapNum;
+                break;
             }
-            // cout << r << endl;
         }
         return r;
     }
@@ -74,6 +62,11 @@ int main() {
     {
         vector<int> v1{4,4,4,4,3};
         vector<int> v2{5,5,5,5,3};
+        cout << s.minCost(v1, v2) << endl;
+    }
+    {
+        vector<int> v1{84,80,43,8,80,88,43,14,100,88};
+        vector<int> v2{32,32,42,68,68,100,42,84,14,8};
         cout << s.minCost(v1, v2) << endl;
     }
 }
