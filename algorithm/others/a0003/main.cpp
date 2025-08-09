@@ -55,7 +55,7 @@ int max_sum_of_unjoined(vector<vector<int>>& m, int row_num, int column_num) {
             value_loc.push_back(make_pair(m[i][j], make_pair(i, j)));
         }
     }
-    sort(value_loc.begin(), value_loc.end(), [](int a, int b) {
+    sort(value_loc.begin(), value_loc.end(), [](pair<int, pair<int, int>>& a, pair<int, pair<int, int>>& b) {
         return a < b;
     });
 
