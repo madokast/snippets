@@ -1,3 +1,7 @@
+/**
+ * 从单向链表中删除指定值的节点
+ */
+
 #include <iostream>
 #include <vector>
 #include <unordered_map>
