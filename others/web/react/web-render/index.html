@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>React兼容配置示例</title>
+    <!-- 引入必要的库 -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <!-- 引入外部JSX文件，使用type="text/babel" -->
+    <script type="text/babel">
+        
+const element = <h1>Hello, React with proper hints!</h1>;
+
+// 将元素渲染到DOM中
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(element);
+
+    </script>
+</body>
+</html>
+    
